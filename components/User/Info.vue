@@ -1,28 +1,44 @@
 <template>
   <div class="flex flex-row justify-between items-center pt-2">
-    <!-- Page Title-->
+    <!-- Page Title -->
     <h1 class="text-black font-bold text-3xl">
       {{ pageTitle }}
     </h1>
     <div class="flex flex-row gap-2 items-center">
-      <!--Switch Language-->
-      <a-select ref="select" class="w-36">
-        <a-select-option value="en"
-          ><p class="flex flex-row items-center gap-3">
-            <NuxtImg class="w-5 h-5" src="/images/english.svg" /><span
-              >English</span
-            >
-          </p></a-select-option
+      <!-- Switch Language -->
+      <a-select
+        ref="select"
+        class="w-36"
+        @change="(value: any ) => handleChange(value)"
+        v-model:value="lang"
+      >
+        <!-- Hidden option for the current locale from the cookie -->
+        <a-select-option
+          v-if="currentLocale"
+          :key="currentLocale.code"
+          :value="currentLocale.code"
+          style="display: none"
         >
-        <a-select-option value="vi"
-          ><p class="flex flex-row items-center gap-3">
-            <NuxtImg class="w-5 h-5" src="/images/vietnam.svg" /><span
-              >Vietnamese</span
-            >
-          </p></a-select-option
+          <p class="flex flex-row items-center gap-3">
+            <NuxtImg class="w-5 h-5" :src="currentLocale.icon" />
+            <span>{{ currentLocale.name }}</span>
+          </p>
+        </a-select-option>
+
+        <!-- Show only available locales (excluding the current one) -->
+        <a-select-option
+          v-for="locale in availableLocales"
+          :key="locale.code"
+          :value="locale.code"
         >
+          <p class="flex flex-row items-center gap-3">
+            <NuxtImg class="w-5 h-5" :src="locale.icon" />
+            <span>{{ locale.name }}</span>
+          </p>
+        </a-select-option>
       </a-select>
-      <!-- Notifications-->
+
+      <!-- Notifications -->
       <a-popover v-model:open="hide" placement="bottomRight" trigger="click">
         <template #content>
           <div class="w-56 p-2">
@@ -53,7 +69,7 @@
         </a-badge>
       </a-popover>
 
-      <!-- User Info-->
+      <!-- User Info -->
       <div class="flex flex-col justify-items-end">
         <h5 class="font-semibold">{{ testUser.name }}</h5>
         <p>{{ testUser.role }}</p>
@@ -71,8 +87,10 @@
 <script lang="ts" setup>
 const route = useRoute();
 const pageTitle = computed(() => {
-  return route.name === "index" ? "Dashboard" : useCapitalize(route.name);
+  const name = route.name as string;
+  return name === "index" ? "Dashboard" : useCapitalize(name);
 });
+
 const hide = ref<boolean>(false);
 const activeTab = ref<boolean>(true);
 const setActiveTab = (tab: boolean): void => {
@@ -81,10 +99,24 @@ const setActiveTab = (tab: boolean): void => {
 const activeClass = "bg-blue-500 text-white py-1 px-2 rounded";
 const inactiveClass = "bg-transparent text-black py-1 px-2 rounded";
 
-// const { locale, setLocale } = useI18n();
-// const handleChange = (value: string) => {
-//   setLocale(value);
-// };
+const { locale, locales, setLocale, setLocaleCookie, getLocaleCookie } =
+  useI18n();
+
+const lang = ref(getLocaleCookie());
+
+const currentLocale = computed(() => {
+  return locales.value.find((i) => i.code === lang.value);
+});
+
+const availableLocales = computed(() => {
+  return locales.value.filter((i) => i.code !== locale.value);
+});
+
+const handleChange = (value: string) => {
+  setLocale(value);
+  setLocaleCookie(value);
+};
+
 const testUser = ref({
   name: "Hai Nguyen",
   role: "Admin",
