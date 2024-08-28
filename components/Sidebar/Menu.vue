@@ -1,16 +1,15 @@
 <script setup lang="ts">
 const menuItems = ref([
-  { title: "Dashboard", path: "/", icon: "/images/dashboard.svg" },
+  { path: "dashboard", icon: "/images/dashboard.svg" },
   {
-    title: "Customers",
-    path: "/customers",
+    path: "customers",
     icon: "/images/customers.svg",
   },
-  { title: "Product", path: "/product", icon: "/images/product.svg" },
-  { title: "Posts", path: "/posts", icon: "/images/post.svg" },
-  { title: "Source", path: "/source", icon: "/images/source.svg" },
-  { title: "Users", path: "/users", icon: "/images/user.svg" },
-  { title: "Setting", path: "/setting", icon: "/images/setting.svg" },
+  { path: "product", icon: "/images/product.svg" },
+  { path: "posts", icon: "/images/post.svg" },
+  { path: "source", icon: "/images/source.svg" },
+  { path: "users", icon: "/images/user.svg" },
+  { path: "setting", icon: "/images/setting.svg" },
 ]);
 
 const route = useRoute();
@@ -33,8 +32,8 @@ const activeOrHover = (path: string) => {
       <UiLogo />
       <nav>
         <ul>
-          <li v-for="menuItem in menuItems" :key="menuItem.title">
-            <NuxtLink
+          <li v-for="menuItem in menuItems" :key="menuItem.path">
+            <NuxtLinkLocale
               :to="menuItem.path"
               class="flex justify-between items-center my-1 font-[Cambria]"
               :class="activeOrHover(menuItem.path).value"
@@ -42,7 +41,7 @@ const activeOrHover = (path: string) => {
               <span class="flex flex-row gap-2 items-center p-4">
                 <NuxtImg :src="menuItem.icon" alt="icon" class="w-10 h-10" />
                 <span class="text-white text-lg font-bold">{{
-                  menuItem.title
+                  $t(menuItem.path)
                 }}</span>
               </span>
               <span class="text-xl pr-4">
@@ -62,7 +61,7 @@ const activeOrHover = (path: string) => {
                   />
                 </svg>
               </span>
-            </NuxtLink>
+            </NuxtLinkLocale>
           </li>
         </ul>
       </nav>

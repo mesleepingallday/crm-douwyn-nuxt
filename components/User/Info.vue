@@ -2,7 +2,7 @@
   <div class="flex flex-row justify-between items-center pt-2">
     <!-- Page Title -->
     <h1 class="text-black font-bold text-3xl">
-      {{ pageTitle }}
+      {{ $t(pageTitle) }}
     </h1>
     <div class="flex flex-row gap-2 items-center">
       <!-- Switch Language -->
@@ -72,7 +72,7 @@
       <!-- User Info -->
       <div class="flex flex-col justify-items-end">
         <h5 class="font-semibold">{{ testUser.name }}</h5>
-        <p>{{ testUser.role }}</p>
+        <p>{{ $t(testUser.role) }}</p>
       </div>
       <NuxtImg src="/images/demo-avatar.png" alt="avatar" class="w-14 h-14" />
       <NuxtImg
@@ -86,11 +86,7 @@
 
 <script lang="ts" setup>
 const route = useRoute();
-const pageTitle = computed(() => {
-  const name = route.name as string;
-  return name === "index" ? "Dashboard" : useCapitalize(name);
-});
-
+const pageTitle = computed(() => route.name as string);
 const hide = ref<boolean>(false);
 const activeTab = ref<boolean>(true);
 const setActiveTab = (tab: boolean): void => {
@@ -119,6 +115,6 @@ const handleChange = (value: string) => {
 
 const testUser = ref({
   name: "Hai Nguyen",
-  role: "Admin",
+  role: "admin",
 });
 </script>
