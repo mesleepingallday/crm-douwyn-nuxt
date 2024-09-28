@@ -3,6 +3,7 @@ export default defineNuxtConfig({
   compatibilityDate: "2024-04-03",
   devtools: { enabled: true },
   modules: [
+    "@ant-design-vue/nuxt",
     "@pinia/nuxt",
     "@nuxtjs/tailwindcss",
     "@nuxtjs/i18n",
@@ -10,28 +11,37 @@ export default defineNuxtConfig({
     "@nuxtjs/google-fonts",
     "nuxt-lodash",
     "@ant-design-vue/nuxt",
+    "@primevue/nuxt-module",
   ],
+  primevue: {
+    options: {
+      unstyled: false,
+    },
+  },
   i18n: {
     lazy: true,
-    langDir: "locales",
+    langDir: "lang",
     strategy: "no_prefix",
     vueI18n: "./i18n.config.ts",
     defaultLocale: "en",
     locales: [
       {
         code: "en",
+        iso: "en-US",
         name: "English",
         icon: "/images/english.svg",
         file: "en.json",
       },
       {
-        code: "vn",
+        code: "vi",
+        iso: "vi-VN",
         name: "Vietnamese",
         icon: "/images/vietnam.svg",
         file: "vi.json",
       },
       {
         code: "cn",
+        iso: "zh-CN",
         name: "Chinese",
         icon: "/images/china.svg",
         file: "cn.json",

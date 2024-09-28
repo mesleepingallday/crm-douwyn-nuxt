@@ -7,3 +7,6 @@
 </template>
 
 <script lang="ts"></script>
+<style>
+@import url("primeicons/primeicons.css");
+</style>

@@ -1,0 +1,15 @@
+{
+  "posts": [
+    {
+      "id": "1",
+      "title": "a title",
+      "content": "Hello World",
+      "language": "vn",
+      "authorCreatrID": "1",
+      "postDate": "09/27/2024",
+      "status": "public",
+      "tag": ["news"],
+      "category": "general"
+    }
+  ]
+}

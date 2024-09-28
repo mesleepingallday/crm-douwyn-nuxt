@@ -10,14 +10,20 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@ant-design-vue/nuxt": "^1.4.2",
+    "@ant-design-vue/nuxt": "^1.4.4",
     "@nuxt/image": "^1.7.0",
     "@nuxtjs/google-fonts": "^3.2.0",
     "@nuxtjs/i18n": "^8.5.0",
     "@nuxtjs/tailwindcss": "^6.12.1",
-    "@pinia/nuxt": "^0.5.3",
+    "@pinia/nuxt": "^0.5.4",
     "nuxt": "^3.12.4",
     "nuxt-lodash": "^2.5.3",
+    "primeicons": "^7.0.0",
+    "primevue": "^4.0.7",
+    "tailwindcss-primeui": "^0.3.4",
     "vue": "latest"
+  },
+  "devDependencies": {
+    "@primevue/nuxt-module": "^4.0.7"
   }
 }
