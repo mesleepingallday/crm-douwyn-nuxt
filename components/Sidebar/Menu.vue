@@ -1,72 +1,91 @@
 <script setup lang="ts">
-const menuItems = ref([
-  { path: "dashboard", icon: "/images/dashboard.svg" },
-  {
-    path: "customers",
-    icon: "/images/customers.svg",
-  },
-  { path: "product", icon: "/images/product.svg" },
-  { path: "posts", icon: "/images/post.svg" },
-  { path: "source", icon: "/images/source.svg" },
-  { path: "users", icon: "/images/user.svg" },
-  { path: "setting", icon: "/images/setting.svg" },
+const isCollapsed = ref(false);
+const route = useRoute();
+interface MenuItem {
+  path: string;
+  icon: string;
+}
+const menuItems = ref<MenuItem[]>([
+  { path: "dashboard", icon: "icons:dashboard" },
+  { path: "customers", icon: "icons:customers" },
+  { path: "product", icon: "icons:product" },
+  { path: "posts", icon: "icons:post" },
+  { path: "source", icon: "icons:source" },
+  { path: "users", icon: "icons:user" },
+  { path: "setting", icon: "icons:setting" },
 ]);
 
-const route = useRoute();
-
-const activeTab = "bg-[#393E46] text-white rounded-2xl mx-2";
-const activeOrHover = (path: string) => {
-  return computed(() => {
-    return {
-      [activeTab]: path === route.path,
-      [`hover:${activeTab}`]: true,
-    };
-  });
+const menuItemStyle = (menuItem: MenuItem) => {
+  return {
+    "relative flex items-center my-1 py-2 px-3 font-medium rounded-md cursor-pointer transition-colors group":
+      true,
+    "bg-gradient-to-tr from-slate-300 to-slate-600 text-sky-800":
+      route.path === "/" + menuItem.path,
+    "hover:bg-slate-500 text-gray-600": route.path !== "/" + menuItem.path,
+  };
 };
 </script>
 
+<
 <template>
   <!-- Sidebar -->
-  <aside class="w-1/6">
-    <div class="bg-[#222831] h-full rounded-sm">
-      <UiLogo />
-      <nav>
-        <template>
-          <ul>
-            <li v-for="menuItem in menuItems" :key="menuItem.path">
-              <NuxtLinkLocale
-                :to="menuItem.path"
-                class="flex justify-between items-center my-1 font-[Cambria]"
-                :class="activeOrHover(menuItem.path).value"
+  <aside class="h-screen">
+    <nav
+      class="h-full flex flex-col bg-[#222831] border-r shadow-sm transition-all duration-300"
+    >
+      <div class="relative flex flex-col justify-between p-4 pb-2">
+        <Icon
+          :name="
+            isCollapsed
+              ? 'material-symbols:arrow-circle-right'
+              : 'material-symbols:arrow-circle-left'
+          "
+          @click="isCollapsed = !isCollapsed"
+          size="3em"
+          class="absolute cursor-pointer text-sky-600 m-4 -right-12 shadow-lg"
+        />
+        <UiLogo
+          :class="{ 'w-20': isCollapsed }"
+          class="overflow-hidden transition-all"
+        />
+      </div>
+      <ul class="flex-1 px-3">
+        <li
+          v-for="menuItem in menuItems"
+          :key="menuItem.path"
+          class="flex justify-center"
+        >
+          <NuxtLink :to="menuItem.path" :class="menuItemStyle(menuItem)">
+            <span class="flex flex-row gap-2 items-center">
+              <Icon
+                :name="menuItem.icon"
+                :size="isCollapsed ? '2.5em' : '2.5em'"
+              />
+              <span
+                v-if="!isCollapsed"
+                class="w-44 ml-3 text-white text-lg font-bold"
               >
-                <span class="flex flex-row gap-2 items-center p-4">
-                  <NuxtImg :src="menuItem.icon" alt="icon" class="w-10 h-10" />
-                  <span class="text-white text-lg font-bold">{{
-                    $t(menuItem.path)
-                  }}</span>
-                </span>
-                <span class="text-xl pr-4">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="1em"
-                    height="1em"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      fill="none"
-                      stroke="white"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="1.5"
-                      d="m9 5l6 7l-6 7"
-                    />
-                  </svg>
-                </span>
-              </NuxtLinkLocale>
-            </li>
-          </ul>
-        </template>
-      </nav>
-    </div>
+                {{ $t(menuItem.path) }}
+              </span>
+            </span>
+            <span
+              v-if="isCollapsed"
+              class="absolute w-28 left-full rounded-md px-2 py-1 ml-6 bg-slate-100 text-slate-800 text-base invisible opacity-20 -translate-x-3 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0"
+            >
+              {{ $t(menuItem.path) }}
+            </span>
+          </NuxtLink>
+        </li>
+      </ul>
+      <div>
+        <p>Dark mode</p>
+      </div>
+    </nav>
   </aside>
 </template>
+
+<style scoped>
+* {
+  font-family: Roboto, sans-serif;
+}
+</style>

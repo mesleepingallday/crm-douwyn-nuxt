@@ -1,4 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import Aura from "@primevue/themes/aura";
 export default defineNuxtConfig({
   compatibilityDate: "2024-04-03",
   devtools: { enabled: true },
@@ -12,10 +13,40 @@ export default defineNuxtConfig({
     "nuxt-lodash",
     "@ant-design-vue/nuxt",
     "@primevue/nuxt-module",
+    "@nuxt/fonts",
+    "@nuxt/icon",
   ],
+  ssr: false,
+  icon: {
+    provider: "server",
+    customCollections: [
+      {
+        prefix: "icons",
+        dir: "./assets/icons",
+      },
+    ],
+  },
+  fonts: {
+    defaults: {
+      weights: [300, 400, 500, 600, 700],
+      styles: ["normal", "italic"],
+      subsets: [
+        "cyrillic-ext",
+        "cyrillic",
+        "greek-ext",
+        "greek",
+        "vietnamese",
+        "latin-ext",
+        "latin",
+      ],
+    },
+    provider: "google",
+  },
   primevue: {
     options: {
-      unstyled: false,
+      theme: {
+        preset: Aura,
+      },
     },
   },
   i18n: {
