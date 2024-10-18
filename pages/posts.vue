@@ -49,9 +49,9 @@
           <TabPanel value="0">
             <Editor
               v-model="contentEditor"
-              pt:root="h-96"
+              pt:root="h-full w-full "
               pt:content="h-96 overflow-y-scroll"
-              pt:toolbar="bg-red-100 z-10"
+              pt:toolbar="top-0 left-0"
               pt:tooltip="z-100"
             />
           </TabPanel>
@@ -113,16 +113,26 @@
         <label for="post-featured-image" class="font-bold block mt-2 mb-2"
           >Featured Image</label
         >
+        <img
+          class="border-dashed border-2 border-slate-800 rounded-lg mb-4"
+          v-if="featuredImage.content !== ''"
+          :key="featuredImage.name"
+          :src="featuredImage.content"
+          alt="file.name"
+        />
         <Button
           label="+ Upload"
           @click="visibleFeaturedImage = true"
+          class="py-4"
           id="post-featured-image"
         />
         <Dialog
+          id="upload-featured-image"
           v-model:visible="visibleFeaturedImage"
           modal
           :pt="featureImageStyle"
           unstyled
+          v-on:hide="closeDialog"
         >
           <Tabs value="0" :pt="tabsStyle" class="w-full" unstyled>
             <TabList :pt="tabListStyle" unstyled>
@@ -138,25 +148,45 @@
             <TabPanels>
               <TabPanel
                 value="0"
-                class="h-[500px] flex justify-center items-center"
+                class="h-[450px] flex justify-center items-center gap-8 rounded-md"
               >
                 <div class="flex flex-col gap-4 justify-center items-center">
+                  <div class="grid gap-4">
+                    <a
+                      class="px-4 py-2 bg-lime-400 rounded-md text-black no-underline"
+                      v-for="link in fileLinks"
+                      :key="link"
+                      :href="`/userFiles/specificFolder/${link}`"
+                      >{{ link }}</a
+                    >
+                  </div>
                   <Toast />
                   <p>Drop files to upload</p>
                   <p>or</p>
-                  <Toast />
                   <FileUpload
+                    id="image-upload"
+                    type="file"
+                    ref="fileInput"
                     mode="basic"
-                    name="demo[]"
+                    name="images[]"
                     url="/api/upload"
                     accept="image/*"
                     :maxFileSize="1000000"
                     :auto="true"
                     chooseLabel="Select File"
                     @upload="onUpload"
+                    @input="handleFileInput"
                   />
                   <p>Maximum upload file size: 8MB</p>
                 </div>
+                <img
+                  v-for="file in files"
+                  :key="file.name"
+                  :src="file.content"
+                  alt="file.name"
+                  class="w-96 border-dashed border-2 border-slate-800 rounded-lg"
+                />
+                <!-- <p>{{ approveUpload }}</p> -->
               </TabPanel>
               <TabPanel value="1" class="h-[500px]">
                 <div class="w-10/12 h-full p-8 bg-red-400 overflow-y-scroll">
@@ -165,10 +195,10 @@
               </TabPanel>
             </TabPanels>
           </Tabs>
-          <div class="w-full bg-white p-2 flex justify-end">
+          <div class="w-full bg-white py-2 flex justify-end pr-2">
             <Button
               label="Choose image"
-              @click="visibleFeaturedImage = false"
+              @click="submitImage"
               :pt="confirmButtonStyle"
             />
           </div>
@@ -179,6 +209,58 @@
 </template>
 
 <script lang="ts" setup>
+interface File {
+  name: string;
+  content: string;
+  size: string;
+  type: string;
+  lastModified: string;
+}
+
+const { handleFileInput, files } = useFileStorage();
+const fileInput = ref<HTMLInputElement>();
+const fileLinks = ref<string[]>([]);
+
+const featuredImage = ref<File>({
+  name: "",
+  content: "",
+  size: "",
+  type: "",
+  lastModified: "",
+});
+const approveUpload = ref("");
+const submitImage = async () => {
+  const response = await $fetch("/api/files", {
+    method: "POST",
+    body: {
+      files: files.value,
+    },
+  });
+  if (!response) return;
+  approveUpload.value = "true";
+  fileLinks.value = response;
+  const jsonFiles = JSON.parse(JSON.stringify(files.value));
+  featuredImage.value = jsonFiles[0];
+  console.log(featuredImage);
+  visibleFeaturedImage.value = false;
+};
+const toast = useToast();
+
+const onUpload = () => {
+  toast.add({
+    severity: "success",
+    summary: "Success",
+    detail: "Image Uploaded",
+    life: 3000,
+  });
+};
+
+const closeDialog = () => {
+  if (!approveUpload.value) {
+    files.value = [];
+  }
+};
+
 const date = ref();
 const contentEditor = ref("");
 const selectedLanguage = ref(null);
@@ -216,16 +298,6 @@ const authorList = ref([
   { name: "Jane Doe" },
   { name: "Alice" },
 ]);
-const toast = useToast();
-
-const onUpload = () => {
-  toast.add({
-    severity: "info",
-    summary: "Success",
-    detail: "File Uploaded",
-    life: 3000,
-  });
-};
 
 // Styles
 const titleStyle = ref({
@@ -279,7 +351,6 @@ const multiSelectStyle = ref({
 const featureImageStyle = ref({
   root: "w-10/12 h-[700px] bg-[#CBD2A4] p-10 rounded-md flex flex-col gap-2",
 });
-const editorStyle = ref({});
 </script>
 
 <style scoped>

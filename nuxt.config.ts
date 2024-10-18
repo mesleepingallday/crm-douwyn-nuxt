@@ -15,8 +15,12 @@ export default defineNuxtConfig({
     "@primevue/nuxt-module",
     "@nuxt/fonts",
     "@nuxt/icon",
+    "nuxt-file-storage",
   ],
   ssr: false,
+  fileStorage: {
+    mount: process.env.mount,
+  },
   icon: {
     provider: "server",
     customCollections: [
