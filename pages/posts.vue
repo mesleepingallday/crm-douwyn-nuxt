@@ -1,11 +1,15 @@
 <template>
   <Button label="Show" @click="visibleCreatePost = true" />
+
+  <!-- Create Post Dialog -->
   <Dialog
+    ref="postDialog"
     header="Create New Post"
     v-model:visible="visibleCreatePost"
     modal
     :pt="dialogStyle"
   >
+    <!-- Post Title, Language, Preview, Save -->
     <div class="flex gap-3">
       <InputText
         type="text"
@@ -27,11 +31,16 @@
         <span>Preview</span>
         <i class="pi pi-eye"></i>
       </Button>
-      <Button unstyled :pt="buttonStyle">
+      <Button
+        @click="getData"
+        unstyled
+        class="bg-sky-500 text-white rounded-lg flex gap-2 items-center justify-center font-medium text-lg px-4 py-2 hover:bg-sky-700"
+      >
         <span>Save</span>
         <i class="pi pi-save iconStyle"></i>
       </Button>
     </div>
+
     <!-- Content, Meta, SEO -->
     <div class="flex flex-row gap-3 h-[500px]">
       <Tabs value="0" :pt="tabsStyle" unstyled>
@@ -186,7 +195,6 @@
                   alt="file.name"
                   class="w-96 border-dashed border-2 border-slate-800 rounded-lg"
                 />
-                <!-- <p>{{ approveUpload }}</p> -->
               </TabPanel>
               <TabPanel value="1" class="h-[500px]">
                 <div class="w-10/12 h-full p-8 bg-red-400 overflow-y-scroll">
@@ -216,11 +224,10 @@ interface File {
   type: string;
   lastModified: string;
 }
-
 const { handleFileInput, files } = useFileStorage();
+const approveUpload = ref("");
 const fileInput = ref<HTMLInputElement>();
 const fileLinks = ref<string[]>([]);
-
 const featuredImage = ref<File>({
   name: "",
   content: "",
@@ -228,7 +235,6 @@ const featuredImage = ref<File>({
   type: "",
   lastModified: "",
 });
-const approveUpload = ref("");
 const submitImage = async () => {
   const response = await $fetch("/api/files", {
     method: "POST",
@@ -299,7 +305,21 @@ const authorList = ref([
   { name: "Alice" },
 ]);
 
-// Styles
+const postDialog = ref(null);
+const getData = () => {
+  const data = {
+    title: value.value,
+    lang: selectedLanguage.value,
+    content: contentEditor.value,
+    author: selectedAuthor.value,
+    publishDate: date.value,
+    categories: selectedCategories.value,
+    tags: selectedTags.value,
+    featuredImage: featuredImage.value,
+  };
+  console.log(data);
+};
+
 const titleStyle = ref({
   root: "titleStyle disableOutline",
 });
@@ -353,7 +373,7 @@ const featureImageStyle = ref({
 });
 </script>
 
-<style scoped>
+<style lang="postcss" scoped>
 .titleStyle {
   @apply p-2 text-gray-900 rounded-lg placeholder:text-gray-500 border-2 border-gray-200 w-9/12 font-roboto font-semibold text-2xl;
 }
@@ -376,7 +396,7 @@ const featureImageStyle = ref({
   @apply w-2;
 }
 .iconStyle {
-  @apply text-white font-normal text-base;
+  @apply font-normal text-base;
 }
 .contentStyle {
   @apply flex flex-col gap-5;

@@ -16,8 +16,14 @@ export default defineNuxtConfig({
     "@nuxt/fonts",
     "@nuxt/icon",
     "nuxt-file-storage",
+    "@nuxtjs/strapi",
   ],
   ssr: false,
+  strapi: {
+    url: process.env.STRAPI_URL ?? "http://localhost:1337",
+    prefix: "/api",
+    admin: "/admin",
+  },
   fileStorage: {
     mount: process.env.mount,
   },
