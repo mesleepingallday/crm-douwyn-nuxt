@@ -12,7 +12,7 @@
       <InputText
         type="text"
         label="Title"
-        v-model="value"
+        v-model="title"
         :pt="titleStyle"
         unstyled
       />
@@ -56,7 +56,7 @@
           <TabPanel value="0">
             <Editor
               v-model="contentEditor"
-              pt:root="h-full w-full "
+              pt:root="h-96 w-full "
               pt:content="h-96 overflow-y-scroll"
               pt:toolbar="top-0 left-0"
               pt:tooltip="z-100"
@@ -285,7 +285,7 @@ const tags = ref([
 const selectedAuthor = ref(null);
 const visibleCreatePost = ref(false);
 const visibleFeaturedImage = ref(false);
-const value = ref(null);
+const title = ref("");
 const contentTabs = ref([
   { title: "Content", value: "0" },
   { title: "Meta", value: "1" },
@@ -308,17 +308,16 @@ const authorList = ref([
 
 const getData = async () => {
   const data = {
-    title: value.value.name,
-    lang: selectedLanguage.value,
+    title: title.value,
+    lang: selectedLanguage.value || "en",
     content: contentEditor.value,
-    author: selectedAuthor.value,
+    author: selectedAuthor.value || "",
     publishDate: date.value,
     categories: selectedCategories.value,
     tags: selectedTags.value,
-    featuredImage: featuredImage.value,
+    featuredImage: featuredImage.value.content,
   };
 
-  console.log(data);
   previewPostStore.setPreviewData(data);
   await navigateTo("/post-preview", {
     open: {

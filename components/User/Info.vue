@@ -3,7 +3,7 @@
     class="flex flex-row justify-between items-center p-6 bg-white pl-20 border-b-1 border-slate-200"
   >
     <!-- Page Title -->
-    <h1 class="text-black font-bold text-3xl">
+    <h1 v-if="pageTitle" class="text-black font-bold text-3xl">
       {{ $t(pageTitle) }}
     </h1>
     <div class="flex flex-row gap-2 items-center">
@@ -61,7 +61,7 @@
       </Popover>
 
       <!-- User Info -->
-      <div class="flex flex-col justify-items-end">
+      <div class="flex flex-col justify-items-end w-28">
         <h5 class="font-semibold">{{ testUser.name }}</h5>
         <p>{{ $t(testUser.role) }}</p>
       </div>
@@ -91,7 +91,7 @@ const handleChange = (value: any) => {
   console.log(locale);
 };
 
-const pageTitle = computed(() => route.name as string);
+const pageTitle = computed(() => (route.name ? (route.name as string) : ""));
 
 const notification = ref();
 const toggle = (event: any): void => {

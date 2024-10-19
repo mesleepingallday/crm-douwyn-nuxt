@@ -19,7 +19,6 @@
     "@pinia/nuxt": "^0.5.5",
     "@primevue/themes": "^4.1.0",
     "nuxt": "^3.12.4",
-    "nuxt-lodash": "^2.5.3",
     "pinia": "^2.2.4",
     "primevue": "^4.1.0",
     "quill": "^2.0.2",
@@ -27,11 +26,12 @@
     "vue": "latest"
   },
   "devDependencies": {
+    "@nuxt/devtools": "npm:@nuxt/devtools-edge@latest",
     "@primevue/nuxt-module": "^4.1.0",
     "nuxt-file-storage": "^0.2.8",
+    "nuxt-lodash": "^2.5.3",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.8",
-    "tailwind-merge": "^2.5.4",
-    "@nuxt/devtools": "npm:@nuxt/devtools-edge@latest"
+    "tailwind-merge": "^2.5.4"
   }
 }

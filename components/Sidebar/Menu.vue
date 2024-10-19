@@ -14,6 +14,7 @@ const menuItems = ref<MenuItem[]>([
   { path: "users", icon: "icons:user" },
   { path: "setting", icon: "icons:setting" },
 ]);
+const darkText = _capitalize("dark");
 
 const menuItemStyle = (menuItem: MenuItem) => {
   return {
@@ -26,7 +27,6 @@ const menuItemStyle = (menuItem: MenuItem) => {
 };
 </script>
 
-<
 <template>
   <!-- Sidebar -->
   <aside class="h-screen">
@@ -78,7 +78,7 @@ const menuItemStyle = (menuItem: MenuItem) => {
         </li>
       </ul>
       <div>
-        <p>Dark mode</p>
+        <p>{{ darkText }}</p>
       </div>
     </nav>
   </aside>

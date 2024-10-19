@@ -1,5 +1,3 @@
-<script lang="ts"></script>
-
 <template>
   <div class="flex flex-row h-screen">
     <SidebarMenu />
@@ -9,3 +7,5 @@
     </div>
   </div>
 </template>
+
+<script lang="ts"></script>
