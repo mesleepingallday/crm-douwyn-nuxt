@@ -8,68 +8,57 @@
     </h1>
     <div class="flex flex-row gap-2 items-center">
       <!-- Switch Language -->
-      <a-select
-        ref="select"
-        class="w-36"
+      <Select
+        v-model="selectedLanguage"
+        :options="languages"
+        optionLabel="name"
+        pt:root="w-44"
         @change="handleChange"
-        v-model:value="lang"
       >
-        <!-- Hidden option for the current locale from the cookie -->
-        <a-select-option
-          v-if="currentLocale"
-          :key="currentLocale.code"
-          :value="currentLocale.code"
-          style="display: none"
-        >
-          <p class="flex flex-row items-center gap-3">
-            <NuxtImg class="w-5 h-5" :src="currentLocale.icon" />
-            <span>{{ currentLocale.name }}</span>
-          </p>
-        </a-select-option>
-
-        <!-- Show only available locales (excluding the current one) -->
-        <a-select-option
-          v-for="locale in availableLocales"
-          :key="locale.code"
-          :value="locale.code"
-        >
-          <p class="flex flex-row items-center gap-3">
-            <NuxtImg class="w-5 h-5" :src="locale.icon" />
-            <span>{{ locale.name }}</span>
-          </p>
-        </a-select-option>
-      </a-select>
-
-      <!-- Notifications -->
-      <a-popover v-model:open="hide" placement="bottomRight" trigger="click">
-        <template #content>
-          <div class="w-56 p-2">
-            <p class="font-semibold text-lg">Notifications</p>
-            <span class="flex flex-row gap-3 m-1">
-              <button
-                @click="setActiveTab(true)"
-                :class="activeTab ? activeClass : inactiveClass"
-              >
-                All
-              </button>
-              <button
-                @click="setActiveTab(false)"
-                :class="activeTab ? inactiveClass : activeClass"
-              >
-                Unread
-              </button>
-            </span>
+        <template #value="slotProps">
+          <div v-if="slotProps.value" class="flex items-center gap-2">
+            <Icon size="1em" :name="slotProps.value.icon" />
+            <div>{{ slotProps.value.name }}</div>
+          </div>
+          <span v-else>
+            {{ slotProps.placeholder }}
+          </span>
+        </template>
+        <template #option="slotProps">
+          <div class="flex items-center gap-2">
+            <Icon size="1em" :name="slotProps.option.icon" />
+            <div>{{ slotProps.option.name }}</div>
           </div>
         </template>
-        <a-badge :dot="true" :offset="[-6, 3]" class="mr-4">
-          <a-avatar
-            src="/images/bell.svg"
-            size="small"
-            alt="bell"
-            class="text-slate-600"
-          />
-        </a-badge>
-      </a-popover>
+      </Select>
+
+      <!-- Notifications -->
+      <Icon
+        name="icons:bell"
+        size="1.5em"
+        alt="bell"
+        class="text-slate-600"
+        @click="toggle"
+      />
+      <Popover ref="notification" pt:root="top-8 bg-white rounded-md border">
+        <div class="w-56">
+          <p class="font-semibold text-lg">Notifications</p>
+          <span class="flex flex-row gap-3 m-1">
+            <button
+              @click="setActiveTab(true)"
+              :class="activeTab ? activeClass : inactiveClass"
+            >
+              All
+            </button>
+            <button
+              @click="setActiveTab(false)"
+              :class="activeTab ? inactiveClass : activeClass"
+            >
+              Unread
+            </button>
+          </span>
+        </div>
+      </Popover>
 
       <!-- User Info -->
       <div class="flex flex-col justify-items-end">
@@ -77,43 +66,43 @@
         <p>{{ $t(testUser.role) }}</p>
       </div>
       <NuxtImg src="/images/demo-avatar.png" alt="avatar" class="w-14 h-14" />
-      <NuxtImg
-        src="/images/arrow-down.svg"
-        alt="arrow down"
-        class="text-slate-600"
-      />
+      <Icon size="1em" name="ri:arrow-down-s-fill" />
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 const route = useRoute();
+const { locale, setLocale, setLocaleCookie } = useI18n();
+const languages = ref([
+  { name: "English", code: "en", icon: "icons:english" },
+  { name: "Vietnamese", code: "vi", icon: "icons:vietnam" },
+  { name: "Chinese", code: "cn", icon: "icons:china" },
+]);
+const selectedLanguage = ref(
+  languages.value.find(
+    (lang: { name: string; code: string; icon: string }) =>
+      lang.code === locale.value
+  )
+);
+const handleChange = (value: any) => {
+  setLocale(value.value.code);
+  setLocaleCookie(value.value.code);
+  console.log(locale);
+};
+
 const pageTitle = computed(() => route.name as string);
-const hide = ref<boolean>(false);
+
+const notification = ref();
+const toggle = (event: any): void => {
+  notification.value.toggle(event);
+};
 const activeTab = ref<boolean>(true);
 const setActiveTab = (tab: boolean): void => {
   activeTab.value = tab;
 };
 const activeClass = "bg-blue-500 text-white py-1 px-2 rounded";
 const inactiveClass = "bg-transparent text-black py-1 px-2 rounded";
-
-const { locale, locales, setLocale, setLocaleCookie, getLocaleCookie } =
-  useI18n();
-
-const lang = ref(getLocaleCookie());
-
-const currentLocale = computed(() => {
-  return locales.value.find((i) => i.code === lang.value);
-});
-
-const availableLocales = computed(() => {
-  return locales.value.filter((i) => i.code !== locale.value);
-});
-
-const handleChange = (value: string) => {
-  setLocale(value);
-  setLocaleCookie(value);
-};
 
 const testUser = ref({
   name: "Hai Nguyen",

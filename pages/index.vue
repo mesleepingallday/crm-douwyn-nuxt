@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang="ts" setup>
 definePageMeta({
   middleware: "home-redirect",
 });
@@ -7,4 +7,3 @@ definePageMeta({
 <template>
   <div></div>
 </template>
-

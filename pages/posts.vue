@@ -1,9 +1,7 @@
 <template>
   <Button label="Show" @click="visibleCreatePost = true" />
-
   <!-- Create Post Dialog -->
   <Dialog
-    ref="postDialog"
     header="Create New Post"
     v-model:visible="visibleCreatePost"
     modal
@@ -27,9 +25,9 @@
         pt:root="w-64 flex items-center"
         pt:label="text-sm"
       />
-      <Button unstyled :pt="previewStyle">
+      <Button unstyled :pt="previewStyle" @click="getData">
         <span>Preview</span>
-        <i class="pi pi-eye"></i>
+        <Icon size="1.2em" name="ri:eye-line" />
       </Button>
       <Button
         @click="getData"
@@ -37,7 +35,7 @@
         class="bg-sky-500 text-white rounded-lg flex gap-2 items-center justify-center font-medium text-lg px-4 py-2 hover:bg-sky-700"
       >
         <span>Save</span>
-        <i class="pi pi-save iconStyle"></i>
+        <Icon size="1.2em" name="ri:save-3-fill" />
       </Button>
     </div>
 
@@ -217,6 +215,8 @@
 </template>
 
 <script lang="ts" setup>
+import { useMyPreviewPostStore } from "~/stores/preview-post";
+
 interface File {
   name: string;
   content: string;
@@ -225,6 +225,7 @@ interface File {
   lastModified: string;
 }
 const { handleFileInput, files } = useFileStorage();
+const previewPostStore = useMyPreviewPostStore();
 const approveUpload = ref("");
 const fileInput = ref<HTMLInputElement>();
 const fileLinks = ref<string[]>([]);
@@ -305,10 +306,9 @@ const authorList = ref([
   { name: "Alice" },
 ]);
 
-const postDialog = ref(null);
-const getData = () => {
+const getData = async () => {
   const data = {
-    title: value.value,
+    title: value.value.name,
     lang: selectedLanguage.value,
     content: contentEditor.value,
     author: selectedAuthor.value,
@@ -317,7 +317,18 @@ const getData = () => {
     tags: selectedTags.value,
     featuredImage: featuredImage.value,
   };
+
   console.log(data);
+  previewPostStore.setPreviewData(data);
+  await navigateTo("/post-preview", {
+    open: {
+      target: "_blank",
+      windowFeatures: {
+        width: 800,
+        height: 800,
+      },
+    },
+  });
 };
 
 const titleStyle = ref({
@@ -384,7 +395,7 @@ const featureImageStyle = ref({
   @apply bg-[#3FA2F6] rounded-lg flex gap-2 items-center justify-center text-white font-roboto font-medium text-lg px-3;
 }
 .previewButton {
-  @apply bg-white border border-gray-200 text-gray-900 w-36;
+  @apply bg-white border border-gray-200 text-gray-900 w-36 hover:bg-gray-100;
 }
 .authorStyle {
   @apply flex justify-between w-56 h-10;
