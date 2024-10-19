@@ -17,6 +17,7 @@
     "@nuxtjs/strapi": "^1.12.0",
     "@nuxtjs/tailwindcss": "^6.12.1",
     "@pinia/nuxt": "^0.5.5",
+    "@primevue/core": "^4.1.1",
     "@primevue/themes": "^4.1.0",
     "nuxt": "^3.12.4",
     "pinia": "^2.2.4",

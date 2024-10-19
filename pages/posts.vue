@@ -1,6 +1,6 @@
 <template>
   <!--Posts-->
-  <div class="mx-4">
+  <div class="mx-4 my-4">
     <Toolbar>
       <template #start>
         <Button
@@ -12,7 +12,7 @@
           outlined
           @click="handleDeletePosts"
           severity="danger"
-          :disabled="!selectedProducts || !selectedProducts.length"
+          :disabled="!selectedPosts || !selectedPosts.length"
           ><Icon size="1.2em" name="ri:delete-bin-5-line" />{{
             $t("deletePost")
           }}</Button
@@ -32,7 +32,18 @@
       </template>
     </Toolbar>
 
-    <DataTable>
+    <DataTable
+      ref="dt"
+      v-model:selection="selectedPosts"
+      :value="posts"
+      dataKey="id"
+      :paginator="true"
+      :rows="10"
+      :filters="filters"
+      paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+      :rowsPerPageOptions="[5, 10, 25]"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} posts"
+    >
       <template #header>
         <div class="flex flex-wrap gap-2 justify-end">
           <IconField>
@@ -43,6 +54,37 @@
           </IconField>
         </div>
       </template>
+
+      <Column
+        selectionMode="multiple"
+        style="width: 3rem"
+        :exportable="false"
+      ></Column>
+      <Column field="title" :header="$t('title')" class="min-w-3"></Column>
+      <Column field="author" :header="$t('author')" class="min-w-4"></Column>
+      <Column
+        field="categories"
+        :header="$t('category')"
+        class="min-w-4"
+      ></Column>
+      <Column field="tags" :header="$t('tags')" class="min-w-4"></Column>
+      <Column
+        field="publishDate"
+        :header="$t('publishDate')"
+        sortable
+        class="min-w-4"
+      ></Column>
+      <Column field="seo" header="SEO" class="min-w-4"></Column>
+      <Column :exportable="false" class="min-w-4">
+        <template #body="slotProps">
+          <Button outlined rounded class="mr-2"
+            ><Icon size="1em" name="ri:pencil-line"
+          /></Button>
+          <Button outlined rounded severity="danger"
+            ><Icon size="1em" name="ri:delete-bin-line"
+          /></Button>
+        </template>
+      </Column>
     </DataTable>
   </div>
 
@@ -264,6 +306,8 @@
 
 <script lang="ts" setup>
 import { useMyPreviewPostStore } from "~/stores/preview-post";
+import { FilterMatchMode } from "@primevue/core/api";
+
 interface File {
   name: string;
   content: string;
@@ -380,7 +424,12 @@ const getData = async () => {
 const handleDeletePosts = () => {
   console.log("Delete posts");
 };
-const selectedProducts = ref();
+const selectedPosts = ref();
+const dt = ref();
+const posts = ref();
+const filters = ref({
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+});
 
 const titleStyle = ref({
   root: "titleStyle disableOutline",
@@ -437,6 +486,9 @@ const featureImageStyle = ref({
 </script>
 
 <style lang="postcss" scoped>
+* {
+  --p-toolbar-border-color: white;
+}
 .titleStyle {
   @apply p-2 text-gray-900 rounded-lg placeholder:text-gray-500 border-2 border-gray-200 w-9/12 font-roboto font-semibold text-2xl;
 }
