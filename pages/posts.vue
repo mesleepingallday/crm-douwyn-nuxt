@@ -1,8 +1,54 @@
 <template>
-  <Button label="Show" @click="visibleCreatePost = true" />
+  <!--Posts-->
+  <div class="mx-4">
+    <Toolbar>
+      <template #start>
+        <Button
+          :label="$t('createPost')"
+          class="mr-2"
+          @click="visibleCreatePost = true"
+        />
+        <Button
+          outlined
+          @click="handleDeletePosts"
+          severity="danger"
+          :disabled="!selectedProducts || !selectedProducts.length"
+          ><Icon size="1.2em" name="ri:delete-bin-5-line" />{{
+            $t("deletePost")
+          }}</Button
+        >
+      </template>
+      <template #end>
+        <FileUpload
+          mode="basic"
+          accept="image/*"
+          :maxFileSize="1000000"
+          customUpload
+          :chooseLabel="$t('import')"
+          class="mr-2"
+          auto
+          :chooseButtonProps="{ severity: 'secondary' }"
+        />
+      </template>
+    </Toolbar>
+
+    <DataTable>
+      <template #header>
+        <div class="flex flex-wrap gap-2 justify-end">
+          <IconField>
+            <InputIcon>
+              <Icon name="ri:search-line" />
+            </InputIcon>
+            <InputText :placeholder="$t('search') + '...'" />
+          </IconField>
+        </div>
+      </template>
+    </DataTable>
+  </div>
+
   <!-- Create Post Dialog -->
   <Dialog
-    header="Create New Post"
+    :header="$t('createPost')"
     v-model:visible="visibleCreatePost"
     modal
     :pt="dialogStyle"
@@ -13,6 +59,7 @@
         type="text"
         label="Title"
         v-model="title"
+        :placeholder="$t('titlePlaceholder')"
         :pt="titleStyle"
         unstyled
       />
@@ -20,13 +67,13 @@
         v-model="selectedLanguage"
         :options="languageOfPost"
         optionLabel="name"
-        placeholder="Select language"
         :pt="selectLanguageStyle"
         pt:root="w-64 flex items-center"
         pt:label="text-sm"
+        :placeholder="$t('languagePlaceholder')"
       />
       <Button unstyled :pt="previewStyle" @click="getData">
-        <span>Preview</span>
+        <span>{{ $t("preview") }}</span>
         <Icon size="1.2em" name="ri:eye-line" />
       </Button>
       <Button
@@ -34,7 +81,7 @@
         unstyled
         class="bg-sky-500 text-white rounded-lg flex gap-2 items-center justify-center font-medium text-lg px-4 py-2 hover:bg-sky-700"
       >
-        <span>Save</span>
+        <span>{{ $t("save") }}</span>
         <Icon size="1.2em" name="ri:save-3-fill" />
       </Button>
     </div>
@@ -49,7 +96,7 @@
             :value="tab.value"
             :pt="tabStyle"
             unstyled
-            >{{ tab.title }}</Tab
+            >{{ $t(tab.title) }}</Tab
           >
         </TabList>
         <TabPanels>
@@ -71,27 +118,28 @@
         </TabPanels>
       </Tabs>
       <div class="flex flex-col w-56">
-        <label for="author" class="font-bold block mb-2">Author</label>
+        <label for="author" class="font-bold block mb-2">{{
+          $t("author")
+        }}</label>
         <Select
           id="author"
           v-model="selectedAuthor"
           :options="authorList"
           optionLabel="name"
-          placeholder="Select author"
           :pt="selectAuthorStyle"
         />
-        <label for="post-date" class="font-bold block mt-2 mb-2"
-          >Post Date</label
-        >
+        <label for="post-date" class="font-bold block mt-2 mb-2">{{
+          $t("postDate")
+        }}</label>
         <DatePicker
           id="post-date"
           v-model="date"
           showIcon
           pt:pcTodayButton="bg-red-100 text-red-100"
         />
-        <label for="post-category" class="font-bold block mt-2 mb-2"
-          >Category</label
-        >
+        <label for="post-category" class="font-bold block mt-2 mb-2">{{
+          $t("category")
+        }}</label>
         <MultiSelect
           id="post-category"
           v-model="selectedCategories"
@@ -99,12 +147,13 @@
           optionLabel="name"
           filter
           display="chip"
-          placeholder="Select Categories"
           :maxSelectedLabels="2"
           :pt="multiSelectStyle"
         >
         </MultiSelect>
-        <label for="post-tags" class="font-bold block mt-2 mb-2">Tags</label>
+        <label for="post-tags" class="font-bold block mt-2 mb-2">{{
+          $t("tags")
+        }}</label>
         <MultiSelect
           id="post-tags"
           v-model="selectedTags"
@@ -112,14 +161,13 @@
           optionLabel="name"
           filter
           display="chip"
-          placeholder="Select Categories"
           :maxSelectedLabels="3"
           :pt="multiSelectStyle"
         >
         </MultiSelect>
-        <label for="post-featured-image" class="font-bold block mt-2 mb-2"
-          >Featured Image</label
-        >
+        <label for="post-featured-image" class="font-bold block mt-2 mb-2">{{
+          $t("featuredImage")
+        }}</label>
         <img
           class="border-dashed border-2 border-slate-800 rounded-lg mb-4"
           v-if="featuredImage.content !== ''"
@@ -128,7 +176,7 @@
           alt="file.name"
         />
         <Button
-          label="+ Upload"
+          :label="$t('uploadImage')"
           @click="visibleFeaturedImage = true"
           class="py-4"
           id="post-featured-image"
@@ -149,7 +197,7 @@
                 :value="tab.value"
                 :pt="tabStyle"
                 unstyled
-                >{{ tab.title }}</Tab
+                >{{ $t(tab.title) }}</Tab
               >
             </TabList>
             <TabPanels>
@@ -168,8 +216,8 @@
                     >
                   </div>
                   <Toast />
-                  <p>Drop files to upload</p>
-                  <p>or</p>
+                  <p>{{ $t("dropFileToUpload") }}</p>
+                  <p>{{ $t("or") }}</p>
                   <FileUpload
                     id="image-upload"
                     type="file"
@@ -180,11 +228,11 @@
                     accept="image/*"
                     :maxFileSize="1000000"
                     :auto="true"
-                    chooseLabel="Select File"
+                    :chooseLabel="$t('selectFile')"
                     @upload="onUpload"
                     @input="handleFileInput"
                   />
-                  <p>Maximum upload file size: 8MB</p>
+                  <p>{{ $t("maximumUploadFileSize") }}: 8MB</p>
                 </div>
                 <img
                   v-for="file in files"
@@ -203,7 +251,7 @@
           </Tabs>
           <div class="w-full bg-white py-2 flex justify-end pr-2">
             <Button
-              label="Choose image"
+              :label="$t('chooseImage')"
               @click="submitImage"
               :pt="confirmButtonStyle"
             />
@@ -216,7 +264,6 @@
 
 <script lang="ts" setup>
 import { useMyPreviewPostStore } from "~/stores/preview-post";
-
 interface File {
   name: string;
   content: string;
@@ -287,13 +334,13 @@ const visibleCreatePost = ref(false);
 const visibleFeaturedImage = ref(false);
 const title = ref("");
 const contentTabs = ref([
-  { title: "Content", value: "0" },
+  { title: "content", value: "0" },
   { title: "Meta", value: "1" },
   { title: "SEO", value: "2" },
 ]);
 const featuredImageTabs = ref([
-  { title: "Upload files", value: "0" },
-  { title: "Media Library", value: "1" },
+  { title: "uploadFiles", value: "0" },
+  { title: "mediaLibrary", value: "1" },
 ]);
 const languageOfPost = ref([
   { name: "English" },
@@ -330,6 +377,11 @@ const getData = async () => {
   });
 };
 
+const handleDeletePosts = () => {
+  console.log("Delete posts");
+};
+const selectedProducts = ref();
+
 const titleStyle = ref({
   root: "titleStyle disableOutline",
 });
@@ -347,6 +399,7 @@ const previewStyle = ref({
 const dialogStyle = ref({
   root: "w-10/12 bg-[#E9EFEC] p-10 rounded-md flex flex-col gap-2",
   content: "flex flex-col gap-5",
+  header: "font-semibold text-sky-900 text-2xl",
 });
 const tabsStyle = ref({
   root: "bg-white w-10/12 rounded-md border border-gray-300",
@@ -394,7 +447,7 @@ const featureImageStyle = ref({
   @apply bg-[#3FA2F6] rounded-lg flex gap-2 items-center justify-center text-white font-roboto font-medium text-lg px-3;
 }
 .previewButton {
-  @apply bg-white border border-gray-200 text-gray-900 w-36 hover:bg-gray-100;
+  @apply bg-white border border-gray-200 text-gray-900 w-44 hover:bg-gray-100;
 }
 .authorStyle {
   @apply flex justify-between w-56 h-10;

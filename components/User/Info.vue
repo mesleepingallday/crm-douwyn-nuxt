@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-row justify-between items-center p-6 bg-white pl-20 border-b-1 border-slate-200"
+    class="flex flex-row justify-between items-center p-6 bg-white pl-20 border-b-1 border-slate-200 shadow-md"
   >
     <!-- Page Title -->
     <h1 v-if="pageTitle" class="text-black font-bold text-3xl">
@@ -18,7 +18,7 @@
         <template #value="slotProps">
           <div v-if="slotProps.value" class="flex items-center gap-2">
             <Icon size="1em" :name="slotProps.value.icon" />
-            <div>{{ slotProps.value.name }}</div>
+            <div>{{ $t(slotProps.value.name) }}</div>
           </div>
           <span v-else>
             {{ slotProps.placeholder }}
@@ -27,7 +27,7 @@
         <template #option="slotProps">
           <div class="flex items-center gap-2">
             <Icon size="1em" :name="slotProps.option.icon" />
-            <div>{{ slotProps.option.name }}</div>
+            <div>{{ $t(slotProps.option.name) }}</div>
           </div>
         </template>
       </Select>
@@ -42,19 +42,19 @@
       />
       <Popover ref="notification" pt:root="top-8 bg-white rounded-md border">
         <div class="w-56">
-          <p class="font-semibold text-lg">Notifications</p>
+          <p class="font-semibold text-lg">{{ $t("notification") }}</p>
           <span class="flex flex-row gap-3 m-1">
             <button
               @click="setActiveTab(true)"
               :class="activeTab ? activeClass : inactiveClass"
             >
-              All
+              {{ $t("all") }}
             </button>
             <button
               @click="setActiveTab(false)"
               :class="activeTab ? inactiveClass : activeClass"
             >
-              Unread
+              {{ $t("unread") }}
             </button>
           </span>
         </div>
@@ -75,9 +75,9 @@
 const route = useRoute();
 const { locale, setLocale, setLocaleCookie } = useI18n();
 const languages = ref([
-  { name: "English", code: "en", icon: "icons:english" },
-  { name: "Vietnamese", code: "vi", icon: "icons:vietnam" },
-  { name: "Chinese", code: "cn", icon: "icons:china" },
+  { name: "english", code: "en", icon: "icons:english" },
+  { name: "vietnamese", code: "vi", icon: "icons:vietnam" },
+  { name: "chinese", code: "cn", icon: "icons:china" },
 ]);
 const selectedLanguage = ref(
   languages.value.find(
